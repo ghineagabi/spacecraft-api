@@ -7,6 +7,9 @@ import (
 )
 
 // CheckCredentials queries the DB with the given user credentials and returns an error if 0 results are found
+// Note: The password in the DB should be saved as a SHA512
+// Credentials (in Basic Auth): root: admin
+// Credentials (in DB): root: 30bb8411dd0cbf96b10a52371f7b3be1690f7afa16c3bd7bc7d02c0e2854768d
 func CheckCredentials(u *UserCredentials) error {
 	sqlStatement := `SELECT * FROM new_schema.user WHERE email = ? AND password = ?`
 	row, err := Db.Query(sqlStatement, u.Email, SHA512(u.Password))

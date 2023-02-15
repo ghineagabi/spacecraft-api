@@ -103,7 +103,7 @@ func SHA512(text string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// Wrapper for specific validation fields from the request
+// Wrapper for specific errors regarding fields that need validation from the request
 type InvalidFieldsError struct {
 	AffectedField string
 	Reason        string
@@ -114,7 +114,7 @@ func (m *InvalidFieldsError) Error() string {
 	return fmt.Sprintf("Cannot process <%s> field: <%s>. Reason: <%s>", m.Location, m.AffectedField, m.Reason)
 }
 
-// DecodeAuth decodes the Authorization Header (from base64 to string format)
+// DecodeAuth decodes the Authorization Header (from base64 to string format) and returns an UserCredentials
 func DecodeAuth(auth string) (UserCredentials, error) {
 	if strings.HasPrefix(auth, "Basic ") {
 		sDec, err := b64.StdEncoding.DecodeString(auth[6:])
