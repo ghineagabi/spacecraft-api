@@ -23,6 +23,8 @@ var validPass validator.Func = func(fl validator.FieldLevel) bool {
 	}
 }
 
+// Currently unused validators.
+// "pw" validates a password using ValidatePassword func, "spacetrim" using OnlyUnicode func
 func addValidators() {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 

@@ -14,6 +14,15 @@ func init() {
 	PopulateConfig("credentials.json")
 }
 
+/*
+	Steps (After getting the credentials from the json file)
+
+1) Attempts to open an MySql connection with the info from the json
+2) Attaches a Gin engine to the server
+3) Sets up a CORS Middleware
+4) Adds the custom defined validators and the available routes
+5) Runs the server
+*/
 func main() {
 	var err error
 

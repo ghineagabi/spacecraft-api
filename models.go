@@ -5,7 +5,7 @@ type LoginFromHeader struct {
 }
 
 type UserCredentials struct {
-	Password string `json:"password" binding:"required,pw"`
+	Password string `json:"password" binding:"required"`
 	Email    string `json:"email" binding:"required"`
 }
 
@@ -14,6 +14,9 @@ type FilteredSpacecraft struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
 }
+
+/* The spacecrafts structs could maybe be better organised to not have a different struct for every different requests,
+because it's still working on the Spacecraft DB field*/
 
 type DetailedSpacecraft struct {
 	Id       string     `json:"id"`
@@ -36,15 +39,16 @@ type CreateSpacecraft struct {
 }
 
 type UpdateSpacecraft struct {
-	Id     int    `json:"id" binding:"required"`
-	Name   string `json:"name"`
-	Class  string `json:"class"`
-	Crew   int    `json:"crew"`
-	Image  string `json:"image"`
-	Value  int    `json:"value"`
-	Status string `json:"status"`
+	Id     int     `json:"id" binding:"required"`
+	Name   string  `json:"name"`
+	Class  string  `json:"class"`
+	Crew   int     `json:"crew"`
+	Image  string  `json:"image"`
+	Value  float64 `json:"value"`
+	Status string  `json:"status"`
 }
 
+// SpacecraftId is mostly used as a general ID (currently, used as a spacecraftID) to query
 type SpacecraftId struct {
 	Id int `json:"id" binding:"required"`
 }

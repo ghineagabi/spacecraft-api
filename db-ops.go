@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// CheckCredentials queries the DB with the given user credentials and returns an error if 0 results are found
 func CheckCredentials(u *UserCredentials) error {
 	sqlStatement := `SELECT * FROM new_schema.user WHERE email = ? AND password = ?`
 	row, err := Db.Query(sqlStatement, u.Email, SHA512(u.Password))
@@ -49,6 +50,7 @@ func DeleteSpacecraftFromDB(emailID int) error {
 	return nil
 }
 
+// UpdateSpacecraftFromDB updates the DB fields with the provided UpdateSpacecraft parameters
 func UpdateSpacecraftFromDB(u *UpdateSpacecraft) error {
 	var query strings.Builder
 	params := make([]interface{}, 0)
@@ -93,6 +95,13 @@ func UpdateSpacecraftFromDB(u *UpdateSpacecraft) error {
 	return nil
 }
 
+/*
+	GetSpacecraftsFromDB makes 2 queries:
+
+1) Selects the armaments belonging to the provided ID
+2) Selects the spacecraft having the provided ID
+Then Iterates through the queried armaments and appends them to the DetailedSpacecraft struct
+*/
 func GetSpacecraftsFromDB(s *DetailedSpacecraft, id int) error {
 	sqlStatementForArmaments := `SELECT title, qty FROM new_schema.armaments
 WHERE armaments.id_spacecraft = ?`
@@ -144,6 +153,16 @@ WHERE spacecraft.id = ?`
 	return nil
 }
 
+// GetFilteredSpacecrafts queries the DB based on the <name, class, status> parameters.
+// It finds if the provided <name, class, status> substrings are inside the <name, class, status> fields
+/* Ex :(DB)
+{Spacecraft: {name: Torch, class: High, status: Up},
+ Spacecraft: {name: Born,  class: Hi, status: Dump}}
+
+   (Query) : {name: "or", class: "i", status: "p"}
+
+Would return both the spacecrafts because "or" is in both names, "i" is in both classes and "p" is in both statuses
+*/
 func GetFilteredSpacecrafts(s *[]FilteredSpacecraft, name, class, status string) error {
 	sqlStatement := `SELECT id, name, status
 FROM new_schema.spacecraft

@@ -30,6 +30,7 @@ type FileCredentials struct {
 	Dbname   string `json:"dbname" binding:"required"`
 }
 
+// PopulateConfig Attempts to open a json file and return its context to the global Cred variable
 func PopulateConfig(path string) {
 	jsonFile, err := os.Open(path)
 	if err != nil {
@@ -46,6 +47,7 @@ func PopulateConfig(path string) {
 	}
 }
 
+// ValidatePassword is currently unused, but the main idea is to use it as a custom validator for the password field
 func ValidatePassword(s string) bool {
 	letters := 0
 	var number, upper, sevenOrMore, lower, special bool
@@ -74,6 +76,7 @@ func ValidatePassword(s string) bool {
 	return false
 }
 
+// OnlyUnicode also returns false if the string is empty
 func OnlyUnicode(s string) bool {
 	if s = strings.TrimSpace(s); s == "" {
 		return false
@@ -93,12 +96,14 @@ func RandomString(length int) string {
 	return fmt.Sprintf("%x", b)[:length]
 }
 
+// Returns the SHA512 equivalent of the provided string
 func SHA512(text string) string {
 	h := sha512.New512_256()
 	h.Write([]byte(text))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
+// Wrapper for specific validation fields from the request
 type InvalidFieldsError struct {
 	AffectedField string
 	Reason        string
@@ -109,6 +114,7 @@ func (m *InvalidFieldsError) Error() string {
 	return fmt.Sprintf("Cannot process <%s> field: <%s>. Reason: <%s>", m.Location, m.AffectedField, m.Reason)
 }
 
+// DecodeAuth decodes the Authorization Header (from base64 to string format)
 func DecodeAuth(auth string) (UserCredentials, error) {
 	if strings.HasPrefix(auth, "Basic ") {
 		sDec, err := b64.StdEncoding.DecodeString(auth[6:])

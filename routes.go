@@ -17,6 +17,13 @@ func AddRoutes(r *gin.RouterGroup) {
 
 }
 
+/*
+	Steps:
+
+1) Validates the fields from the provided JSON (in the body request)
+2) Checks the Basic Auth, decodes and verifies if the credentials are met
+3) Attempts to insert the Spacecraft in the DB. If successful, returns 202. Else, returns 400
+*/
 func insertSpacecraftHandler(ctx *gin.Context) {
 	var sc CreateSpacecraft
 	var u LoginFromHeader
@@ -27,7 +34,7 @@ func insertSpacecraftHandler(ctx *gin.Context) {
 	}
 
 	if err := ctx.BindHeader(&u); err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -51,6 +58,8 @@ func insertSpacecraftHandler(ctx *gin.Context) {
 	return
 }
 
+// Similar to insertSpacecraftHandler: Validating (only SpacecraftID in body), credential checking,
+// DB Query and status returning
 func deleteSpacecraftHandler(ctx *gin.Context) {
 	var Spacecraft SpacecraftId
 	var u LoginFromHeader
@@ -85,6 +94,8 @@ func deleteSpacecraftHandler(ctx *gin.Context) {
 	return
 }
 
+// Validation (SpacecraftID in body is required, other fields are optional), credential checking,
+// and updating the fields (At least one extra field is required to finish the query)
 func updateSpacecraftHandler(ctx *gin.Context) {
 	var Spacecraft UpdateSpacecraft
 	var u LoginFromHeader
@@ -119,6 +130,27 @@ func updateSpacecraftHandler(ctx *gin.Context) {
 	return
 }
 
+// Gets JSON response as (checks the ID from the query params)
+/*
+{
+    "id": 1,
+    "name": "Devastator",
+    "class": "Star Destroyer",
+    "crew": 35000,
+    "image": "image",
+    "value": 1999.99,
+    "status": "operational",
+    "armament": [
+        {
+            "title": "Turbo Laser",
+            "qty": "60"
+        },
+        {
+            "title": "Ion Cannons",
+            "qty": "60"
+        }
+    ]
+}*/
 func getSingleSpacecraftHandler(ctx *gin.Context) {
 	var spacecraft DetailedSpacecraft
 
@@ -133,7 +165,7 @@ func getSingleSpacecraftHandler(ctx *gin.Context) {
 		return
 	}
 
-	if err := GetSpacecraftsFromDB(&spacecraft, id); err != nil {
+	if err = GetSpacecraftsFromDB(&spacecraft, id); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
@@ -141,6 +173,23 @@ func getSingleSpacecraftHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, spacecraft)
 }
 
+// Filters a Spacecrafts based on the <name, class, status> from the params in the request. Returns:
+/*
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Devastator",
+            "status": "operational"
+        },
+        {
+            "id": 2,
+            "name": "Red Five",
+            "status": "damaged"
+        }
+    ]
+}
+*/
 func filterSpacecraftsHandler(ctx *gin.Context) {
 	var spacecrafts []FilteredSpacecraft
 
